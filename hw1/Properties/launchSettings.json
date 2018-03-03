@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "hw1": {
+      "commandName": "Project",
+      "commandLineArgs": "--input=test.txt --lambda=0.1 --n=2"
+    }
+  }
+}
