@@ -20,10 +20,21 @@ namespace UnitTest
         }
 
         [Fact]
-        public void TryGetInverseTest()
+        public void TryGetInverseTest1()
         {
             Matrix m = new Matrix(new double[,] { { 3, 0, 2 }, { 2, 0, -2 }, { 0, 1, 1 } });
             Matrix expectedInverse = new Matrix(new double[,] { { 0.2, 0.2, 0 }, { -0.2, 0.3, 1 }, { 0.2, -0.3, 0 } });
+
+            Assert.True(Matrix.TryGetInverse(in m, out Matrix inverse));
+            Assert.Equal(expectedInverse, inverse);
+            Assert.Equal(Matrix.GetDiagnoalMatrix(m.N), m * inverse);
+        }
+
+        [Fact]
+        public void TryGetInverseTest2()
+        {
+            Matrix m = new Matrix(new double[,] { { 2, -1, 0 }, { -1, 2, -1 }, { 0, -1, 2 } });
+            Matrix expectedInverse = new Matrix(new double[,] { { 0.75, 0.5, 0.25 }, { 0.5, 1, 0.5 }, { 0.25, 0.5, 0.75 } });
 
             Assert.True(Matrix.TryGetInverse(in m, out Matrix inverse));
             Assert.Equal(expectedInverse, inverse);
