@@ -141,6 +141,26 @@ namespace CoreLib
             Value = value.Clone() as double[,];
         }
         
+        public Matrix GetTranspose()
+        {
+            Matrix m = new Matrix(this);
+            m.Transpose();
+            return m;
+        }
+
+        public void Transpose()
+        {
+            Matrix m = new Matrix(this);
+            Value = new double[m.M, m.N];
+            for (int i = 0; i < m.N; ++i)
+            {
+                for (int j = 0; j < m.M; ++j)
+                {
+                    this[j, i] = m[i, j];
+                }
+            }
+        }
+
         public static bool TryGetInverse(in Matrix m, out Matrix matrixR)
         {
             matrixR = GetDiagnoalMatrix(m.N);
@@ -167,8 +187,8 @@ namespace CoreLib
 
                 if (maxPivotAbsValue == 0) return false;
 
-                SwapRow(matrixL, i, jMax);
-                SwapRow(matrixR, i, jMax);
+                matrixL.SwapRow(i, jMax);
+                matrixR.SwapRow(i, jMax);
 
                 for(j = i + 1; j < matrixL.N; ++j)
                 {
@@ -293,13 +313,13 @@ namespace CoreLib
             return hashCode;
         }
 
-        private static void SwapRow(Matrix matrix, int row1, int row2)
+        private void SwapRow(int row1, int row2)
         {
-            for (int col = 0; col < matrix.M; ++col)
+            for (int col = 0; col < M; ++col)
             {
-                double temp = matrix[row1, col];
-                matrix[row1, col] = matrix[row2, col];
-                matrix[row2, col] = temp;
+                double temp = this[row1, col];
+                this[row1, col] = this[row2, col];
+                this[row2, col] = temp;
             }
         }
     }
