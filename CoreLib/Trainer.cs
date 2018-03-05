@@ -4,8 +4,8 @@ using System.Text;
 
 namespace CoreLib
 {
-    public interface Solver
+    public interface Trainer
     {
-
+        void Train(List<Tuple<double, double>> data);
     }
 }
