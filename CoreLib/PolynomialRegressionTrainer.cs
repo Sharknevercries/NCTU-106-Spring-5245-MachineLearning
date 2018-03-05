@@ -14,6 +14,8 @@ namespace CoreLib
         public int PolynomialBasesNumber { get; private set; }
         public double Lambda { get; private set; }
 
+        private Matrix _weight;
+
         public PolynomialRegressionTrainer() : this(1)
         {
         }
@@ -32,16 +34,40 @@ namespace CoreLib
         /// Try to find a polynomial function with order n to fit the data using rLSE
         /// </summary>
         /// <param name="data"></param>
-        public void Train(List<Tuple<double, double>> data)
+        public void Train(List<(double, double)> data)
         {
             var A = GetDesignMatrix(PolynomialBasesNumber, data.Select(d => d.Item1).ToList());
-            
+            var b = new Matrix(A.N, 1);
+            for(int i = 0; i < A.N; ++i)
+            {
+                b[i, 0] = data[i].Item2;
+            }
+            _weight = new Matrix(A.N, 1);
 
+            b = A.GetTranspose() * b;
+
+            Matrix.SolveByLUDecomposition(A.GetTranspose() * A + Lambda * Matrix.GetDiagnoalMatrix(A.M), b, out _weight);
+        }
+
+        public double Predict(double data)
+        {
+            double sum = 0, p = 1;
+            for(int i = 0; i < _weight.N;++i)
+            {
+                sum += _weight[i, 0] * p;
+                p *= data;
+            }
+            return sum;
+        }
+
+        public List<double> Predict(List<double> data)
+        {
+            return data.Select(d => Predict(d)).ToList();
         }
 
         private static Matrix GetDesignMatrix(int n, List<double> x)
         {
-            Matrix m = new Matrix(x.Count, n);
+            Matrix m = new Matrix(x.Count, n + 1);
 
             for (int i = 0; i < m.N; ++i)
             {

@@ -62,6 +62,8 @@ namespace CoreLib
                 return true;
             }
         }
+        public bool IsVector => N > 0 && M == 1;
+        public bool IsSquare => N == M;
 
         #region Opeartor
         public static bool operator ==(Matrix m1, Matrix m2)
@@ -101,6 +103,19 @@ namespace CoreLib
             }
             return result;
         }
+        public static Matrix operator *(Matrix m, double v)
+        {
+            Matrix newM = new Matrix(m);
+            for(int i = 0; i < m.N; ++i)
+            {
+                for(int j = 0; j < m.M; ++j)
+                {
+                    newM[i, j] *= v;
+                }
+            }
+            return newM;
+        }
+        public static Matrix operator *(double v, Matrix m) => m * v;
         public static Matrix operator +(Matrix m1, Matrix m2)
         {
             if (m1.N != m2.N || m1.M != m2.M) throw new ArgumentException("Dimension not equal.");
@@ -239,23 +254,23 @@ namespace CoreLib
             return matrix;
         }
 
-        public static bool TryLUDecomposition(in Matrix matrixA, out Matrix matrixL, out Matrix matrixR)
+        public static bool TryLUDecomposition(in Matrix matrixA, out Matrix matrixL, out Matrix matrixU)
         {
             matrixL = GetDiagnoalMatrix(matrixA.N);
-            matrixR = new Matrix(matrixA);
+            matrixU = new Matrix(matrixA);
 
             for (int i = 0; i < matrixL.N; ++i)
             {
                 matrixL[i, i] = 1;
             }
 
-            for (int i = 0, j = 0; i < matrixR.N; ++i)
+            for (int i = 0, j = 0; i < matrixU.N; ++i)
             {
-                while (j < matrixR.M && matrixR[i, j] == 0)
+                while (j < matrixU.M && matrixU[i, j] == 0)
                 {
-                    for (int k = i + 1; k < matrixR.N; ++k)
+                    for (int k = i + 1; k < matrixU.N; ++k)
                     { 
-                        if (matrixR[k, j] != 0)
+                        if (matrixU[k, j] != 0)
                         {
                             // It may need to do LUP decomposition
                             return false;
@@ -263,20 +278,57 @@ namespace CoreLib
                     }
                     ++j;
                 }
-                if (j >= matrixR.M) return true;
-                double pivotValue = matrixR[i, j];
+                if (j >= matrixU.M) return true;
+                double pivotValue = matrixU[i, j];
 
-                for (int p = i + 1; p < matrixR.N; ++p)
+                for (int p = i + 1; p < matrixU.N; ++p)
                 {
-                    double v = matrixR[p, j] / pivotValue;
+                    double v = matrixU[p, j] / pivotValue;
                     matrixL[p, i] = v;
-                    for (int q = j; q < matrixR.M; ++q)
+                    for (int q = j; q < matrixU.M; ++q)
                     {
-                        matrixR[p, q] -= v * matrixR[i, q];
+                        matrixU[p, q] -= v * matrixU[i, q];
                     }
                 }
             }
             return true;
+        }
+        
+        /// <summary>
+        /// Ax = b, find x.
+        /// </summary>
+        /// <param name="a"></param>
+        /// <param name="b"></param>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static bool SolveByLUDecomposition(in Matrix a, in Matrix b, out Matrix x)
+        {
+            x = new Matrix(b);
+            if (!a.IsSquare || !b.IsVector) return false;
+            if (TryLUDecomposition(in a, out Matrix matrixL, out Matrix matrixU))
+            {
+                Matrix y = new Matrix(a.N, 1);
+                for (int i = 0; i < a.N; ++i)
+                {
+                    double sum = 0;
+                    for(int j = 0; j < i; ++j)
+                    {
+                        sum += matrixL[i, j] * y[j, 0];
+                    }
+                    y[i, 0] = b[i, 0] - sum;
+                }
+                for (int i = a.N - 1; i >= 0; --i) {
+                    double sum = 0;
+                    for (int j = i + 1; j < a.N; ++j)
+                    {
+                        sum += matrixU[i, j] * x[j, 0];
+                    }
+                    x[i, 0] = (y[i, 0] - sum) / matrixU[i, i];
+                }
+                return true;
+            }
+            else
+                return false;
         }
 
         public void PrettyPrint()

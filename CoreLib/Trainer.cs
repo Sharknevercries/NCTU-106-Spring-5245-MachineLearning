@@ -6,6 +6,6 @@ namespace CoreLib
 {
     public interface Trainer
     {
-        void Train(List<Tuple<double, double>> data);
+        void Train(List<(double, double)> data);
     }
 }
