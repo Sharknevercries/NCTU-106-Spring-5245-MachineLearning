@@ -9,7 +9,7 @@ namespace CoreLib
     /// <summary>
     /// Implement rLSE 
     /// </summary>
-    public class PolynomialRegressionTrainer : Trainer
+    public class PolynomialRegressionTrainer : Trainer<double, double>
     {
         public int PolynomialBasesNumber { get; private set; }
         public double Lambda { get; private set; }
@@ -60,20 +60,21 @@ namespace CoreLib
             return sum;
         }
 
-        public List<double> Predict(List<double> data)
+        public IEnumerable<double> Predict(IEnumerable<double> data)
         {
-            return data.Select(d => Predict(d)).ToList();
+            return data.Select(d => Predict(d));
         }
 
-        private static Matrix GetDesignMatrix(int n, List<double> x)
+        private static Matrix GetDesignMatrix(int n, IEnumerable<double> x)
         {
-            Matrix m = new Matrix(x.Count, n + 1);
+            var t = x.ToList();
+            Matrix m = new Matrix(t.Count, n + 1);
 
             for (int i = 0; i < m.N; ++i)
             {
                 for (int j = 0; j < m.M; ++j)
                 {
-                    m[i, j] = Math.Pow(x[i], j);
+                    m[i, j] = Math.Pow(t[i], j);
                 }
             }
 

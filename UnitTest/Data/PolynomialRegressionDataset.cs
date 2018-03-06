@@ -6,7 +6,7 @@ using System.Text;
 
 namespace UnitTest
 {
-    public partial class PolynomialRegressionTrainerTest
+    public partial class PolynomialRegressionTest
     {
         public static IEnumerable<object[]> GetDataset()
         {
@@ -30,9 +30,14 @@ namespace UnitTest
             };
         }
 
-        public static IEnumerable<object[]> GetTrainDataset()
+        public static IEnumerable<object[]> GetPolynomialRegressionDataset()
         {
             return GetDataset().Select(d => new object[] { d[0], d[1], d[2], d[3] });
+        }
+
+        public static IEnumerable<object[]> GetNewtonMethodDataset()
+        {
+            return GetDataset().Select(d => new object[] { d[0], d[2], d[3] });
         }
     }
 }

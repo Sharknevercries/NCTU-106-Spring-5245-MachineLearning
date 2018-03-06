@@ -4,8 +4,10 @@ using System.Text;
 
 namespace CoreLib
 {
-    public interface Trainer
+    public interface Trainer<X, Y>
     {
-        void Train(List<(double, double)> data);
+        void Train(List<(X, Y)> data);
+        Y Predict(X data);
+        IEnumerable<Y> Predict(IEnumerable<X> data);
     }
 }
