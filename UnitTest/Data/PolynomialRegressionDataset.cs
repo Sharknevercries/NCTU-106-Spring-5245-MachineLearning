@@ -28,6 +28,24 @@ namespace UnitTest
                     (9, 19),
                 },
             };
+            yield return new object[]
+            {
+                2,
+                0.0,
+                new List<(double, double)>()
+                {
+                    (0.0, 1.0),
+                    (1.0, 11.0),
+                    (2.0, 27.0),
+                    (3.0, 49.0),
+                },
+                new List<(double, double)>()
+                {
+                    (0.0, 1.0),
+                    (2.0, 27.0),
+                    (9.0, 307.0),
+                },
+            };
         }
 
         public static IEnumerable<object[]> GetPolynomialRegressionDataset()
