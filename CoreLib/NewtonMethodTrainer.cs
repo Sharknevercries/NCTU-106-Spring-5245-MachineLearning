@@ -8,7 +8,7 @@ namespace CoreLib
     /// <summary>
     /// Implement newton to fit LSE
     /// </summary>
-    public class NewtonMethodTrainer : Trainer<double, double>
+    public class NewtonMethodTrainer : ITrainer<double, double>
     {
         public int PolynomialBasesNumber { get; private set; }
 
@@ -68,6 +68,25 @@ namespace CoreLib
             }
 
             return m;
+        }
+
+        public double Error((double, double) data)
+        {
+            return Math.Pow(Predict(data.Item1) - data.Item2, 2);
+        }
+
+        public double Error(List<(double, double)> data)
+        {
+            return data.Select(d => Error(d)).Sum();
+        }
+
+        public void PrintModel()
+        {
+            for (int i = PolynomialBasesNumber; i >= 0; --i)
+            {
+                Console.Write($"{ _weight[i, 0] }x^{ i }\t");
+            }
+            Console.WriteLine();
         }
     }
 }

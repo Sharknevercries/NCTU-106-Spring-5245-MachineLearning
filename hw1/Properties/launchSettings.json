@@ -2,7 +2,7 @@
   "profiles": {
     "hw1": {
       "commandName": "Project",
-      "commandLineArgs": "--input=test.txt --lambda=0.1 --n=2"
+      "commandLineArgs": "--input=test2 --lambda=0 --n=2 --mode=lse"
     }
   }
 }
