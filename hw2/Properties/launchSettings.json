@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "hw2": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode=mnist --train=train-images.idx3-ubyte --train_label=train-labels.idx1-ubyte --test=t10k-images.idx3-ubyte --test_label=t10k-labels.idx1-ubyte"
+    },
+    "mnist": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode=mnist --train=train-images.idx3-ubyte --train_label=train-labels.idx1-ubyte --test=t10k-images.idx3-ubyte --test_label=t10k-labels.idx1-ubyte --output=result.txt"
+    },
+    "beta": {
+      "commandName": "Project",
+      "commandLineArgs": "--mode=beta --input=toss --alpha=1 --beta=1"
+    }
+  }
+}
