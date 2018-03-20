@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace CoreLib
+namespace HW1
 {
     public interface ITrainer<X, Y>
     {

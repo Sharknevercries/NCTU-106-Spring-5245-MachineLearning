@@ -1,6 +1,6 @@
 using System;
 using Xunit;
-using CoreLib;
+using HW1;
 using System.Collections.Generic;
 
 namespace UnitTest
