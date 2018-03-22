@@ -4,6 +4,6 @@
     <DebuggerFlavor>ProjectDebugger</DebuggerFlavor>
   </PropertyGroup>
   <PropertyGroup>
-    <ActiveDebugProfile>beta</ActiveDebugProfile>
+    <ActiveDebugProfile>mnist</ActiveDebugProfile>
   </PropertyGroup>
 </Project>

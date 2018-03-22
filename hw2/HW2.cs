@@ -16,22 +16,23 @@ namespace HW2
             }
             else
             {
-                string mode = "";
+                string part = "";
                 foreach (var arg in args)
                 {
-                    if (arg.StartsWith("--mode="))
+                    if (arg.StartsWith("--part="))
                     {
-                        mode = arg.Substring(7);
+                        part = arg.Substring(7);
                     }
                 }
 
-                if (mode == "mnist")
+                if (part == "mnist")
                 {
+                    int mode = default;
                     string trainDataPath = default;
                     string trainLabelPath = default;
                     string testDataPath = default;
                     string testLabelPath = default;
-                    string output = default;
+                    string output = "result";
 
                     foreach (var arg in args)
                     {
@@ -55,6 +56,10 @@ namespace HW2
                         {
                             output = arg.Substring(9);
                         }
+                        else if (arg.StartsWith("--mode="))
+                        {
+                            mode = int.Parse(arg.Substring(7));
+                        }
                     }
 
                     FileStream fs = new FileStream(output, FileMode.Create);
@@ -64,17 +69,30 @@ namespace HW2
 
                     var train = GetMNISTDataset(trainDataPath, trainLabelPath);
                     var test = GetMNISTDataset(testDataPath, testLabelPath);
-                    var trainer = new MNISTTrainer(train);
+                    MNISTTrainner trainer = default;
+
+                    if (mode == 0)
+                    {
+                        trainer = new FrequencyMNISTTrainer(train);
+                    }
+                    else if (mode == 1)
+                    {
+                        trainer = new GaussianMNISTTrainer(train);
+                    }
+                    else
+                    {
+                        throw new ArgumentException();
+                    }
 
                     int counter = 0;
                     int error = 0;
                     foreach (var testData in test)
                     {
                         Console.Write($"{ ++counter }\t");
-                        var posterior = trainer.CalculatePosterior(testData);
+                        trainer.Predict(testData, out var posterior);
                         foreach (var v in posterior)
                         {
-                            Console.Write($"{ v }\t");
+                            Console.Write($"{ v.ToString("0.####") }\t");
                         }
 
                         int prediction = posterior.ToList().IndexOf(posterior.Max());
@@ -84,16 +102,19 @@ namespace HW2
                             error++;
                         Console.WriteLine();
 
-                        Console.SetOut(stdout);
-                        Console.WriteLine(counter - 1);
-                        Console.SetOut(sw);
+                        if (counter % 1000 == 1 && counter != 1)
+                        {
+                            Console.SetOut(stdout);
+                            Console.WriteLine(counter - 1);
+                            Console.SetOut(sw);
+                        }                        
                     }
 
                     Console.WriteLine($"Error = { (double)error / counter }");
 
                     sw.Close();
                 }
-                else if (mode == "beta")
+                else if (part == "beta")
                 {
                     int alpha = default;
                     int beta = default;
