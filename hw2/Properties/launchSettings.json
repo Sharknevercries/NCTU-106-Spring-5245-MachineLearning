@@ -4,13 +4,17 @@
       "commandName": "Project",
       "commandLineArgs": "--mode=mnist --train=train-images.idx3-ubyte --train_label=train-labels.idx1-ubyte --test=t10k-images.idx3-ubyte --test_label=t10k-labels.idx1-ubyte"
     },
-    "mnist": {
+    "beta": {
+      "commandName": "Project",
+      "commandLineArgs": "--part=beta --mode=1 --input=toss --alpha=1 --beta=1"
+    },
+    "gaussian": {
       "commandName": "Project",
       "commandLineArgs": "--part=mnist --mode=1 --train=train-images.idx3-ubyte --train_label=train-labels.idx1-ubyte --test=t10k-images.idx3-ubyte --test_label=t10k-labels.idx1-ubyte --output=gaussian_result.txt"
     },
-    "beta": {
+    "frequency": {
       "commandName": "Project",
-      "commandLineArgs": "--part=mnist --mode=1 --input=toss --alpha=1 --beta=1"
+      "commandLineArgs": "--part=mnist --mode=0 --train=train-images.idx3-ubyte --train_label=train-labels.idx1-ubyte --test=t10k-images.idx3-ubyte --test_label=t10k-labels.idx1-ubyte --output=frequency_result.txt"
     }
   }
 }
