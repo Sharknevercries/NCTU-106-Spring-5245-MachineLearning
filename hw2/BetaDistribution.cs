@@ -44,23 +44,13 @@ namespace HW2
             // TODO: This computation is not accurate.
             double ret = 1;
 
-            int a = default;
-            int b = default;
-
-            if (alpha > beta)
-            {
-                a = alpha;
-                b = beta;
-            }
-            else
-            {
-                a = beta;
-                b = alpha;
-            }
-
-            for (int i = a; i <= a + b - 1; ++i)
+            for (int i = alpha + beta - 1; i >= 2; --i)
                 ret *= i;
-            for (int i = b; i >= 2; --i)
+
+            for (int i = alpha - 1; i >= 2; --i)
+                ret /= i;
+
+            for (int i = beta - 1; i >= 2; --i)
                 ret /= i;
 
             return ret;
