@@ -16,7 +16,7 @@ namespace HW2
         /// <summary>
         /// [i, j] = p( pixel_i | label_j ) under gaussian
         /// </summary>
-        private GaussianDistribution[,] _likelyhood;
+        private IDistribution[,] _likelyhood;
         private double[] _prior;
 
         public override int Predict(Image image)
@@ -39,7 +39,7 @@ namespace HW2
 
                 for (int j = 0; j < ImageSize; ++j)
                 {
-                    posterior[i] += _likelyhood[j, i].CalculateLog(image.Pixel[j]);
+                    posterior[i] += _likelyhood[j, i].PDFLogAt(image.Pixel[j]);
                 }
             }
 
@@ -49,7 +49,7 @@ namespace HW2
         public override void Train(IEnumerable<Image> data)
         {
             _data = data;
-            _likelyhood = new GaussianDistribution[ImageSize, LabelCount];
+            _likelyhood = new IDistribution[ImageSize, LabelCount];
             _prior = new double[LabelCount];
 
             for (int i = 0; i < LabelCount; ++i)
@@ -58,7 +58,16 @@ namespace HW2
 
                 for (int j = 0; j < ImageSize; ++j)
                 {
-                    _likelyhood[j, i] = new GaussianDistribution(_data.Where(d => d.Label == i).Select(d => (double) d.Pixel[j]).ToList());
+                    var temp = _data.Where(d => d.Label == i).Select(d => (double)d.Pixel[j]).ToList();
+                    
+                    if (temp.Count == 0)
+                    {
+                        _likelyhood[j, i] = new UniformDistribution(0, 255);
+                    }
+                    else
+                    {
+                        _likelyhood[j, i] = new GaussianDistribution(temp);
+                    }                    
                 }
             }
         }

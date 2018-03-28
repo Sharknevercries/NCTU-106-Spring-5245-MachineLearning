@@ -5,24 +5,18 @@ using System.Text;
 
 namespace HW2
 {
-    public class GaussianDistribution
+    public class GaussianDistribution : IDistribution
     {
         public double Mu { get; private set; }
         public double Variance { get; private set; }
-
-        public GaussianDistribution(double mu, double variance)
-        {
-            Mu = mu;
-            Variance = variance;
-        }
-
+        
         public GaussianDistribution(IEnumerable<double> data)
         {
             Mu = data.Average();
             Variance = data.Average(d => Math.Pow(d - Mu, 2));
         }
 
-        public double Calculate(double value)
+        public double PDFAt(double value)
         {
             if (Variance == 0)
             {
@@ -41,7 +35,7 @@ namespace HW2
             }            
         }
 
-        public double CalculateLog(double value)
+        public double PDFLogAt(double value)
         {
             if (Variance == 0)
             {

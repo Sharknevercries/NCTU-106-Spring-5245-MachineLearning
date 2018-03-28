@@ -6,7 +6,7 @@ using System.Numerics;
 
 namespace HW2
 {
-    public class BetaDistribution
+    public class BetaDistribution : IDistribution
     {
         public BetaDistribution() : this(1, 1)
         {
@@ -22,10 +22,15 @@ namespace HW2
         public int Alpha { get; private set; }
         public int Beta { get; private set; }
 
-        public double PDF(double p)
+        public double PDFAt(double value)
         {
-            if (p > 1 || p < 0) throw new ArgumentException();
-            return Math.Pow(p, Alpha - 1) * Math.Pow(1 - p, Beta - 1) * ComputeGammaFunction(Alpha, Beta);
+            if (value > 1 || value < 0) throw new ArgumentException();
+            return Math.Pow(value, Alpha - 1) * Math.Pow(1 - value, Beta - 1) * ComputeGammaFunction(Alpha, Beta);
+        }
+
+        public double PDFLogAt(double value)
+        {
+            throw new NotImplementedException();
         }
 
         public double Mode()
@@ -59,7 +64,7 @@ namespace HW2
         public void Summary()
         {
             Console.WriteLine($"Alpha = { Alpha }, Beta = { Beta }");
-            Console.WriteLine($"Mode = { Mode() }, pdf = { PDF(Mode()) }");
+            Console.WriteLine($"Mode = { Mode() }, pdf = { PDFAt(Mode()) }");
         }
     }
 }
