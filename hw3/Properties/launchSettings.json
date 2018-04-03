@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "se": {
+      "commandName": "Project",
+      "commandLineArgs": "--part=se --mu=0 --sig=1"
+    }
+  }
+}
