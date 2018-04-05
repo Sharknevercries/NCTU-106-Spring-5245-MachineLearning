@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Core
@@ -20,7 +21,28 @@ namespace Core
         {
             SetValue(value);
         }
-
+        public Matrix(IEnumerable<double> value, bool isRowMajor = false)
+        {
+            int i = 0;
+            if (isRowMajor)
+            {
+                Value = new double[1, value.Count()];
+                foreach (var item in value)
+                {
+                    Value[0, i] = item;
+                    ++i;
+                }
+            }
+            else
+            {
+                Value = new double[value.Count(), 1];
+                foreach (var item in value)
+                {
+                    Value[i, 0] = item;
+                    ++i;
+                }
+            }
+        }
         public Matrix()
         {
             Value = new double[0, 0];
@@ -105,15 +127,15 @@ namespace Core
         }
         public static Matrix operator *(Matrix m, double v)
         {
-            Matrix newM = new Matrix(m);
+            Matrix result = new Matrix(m);
             for(int i = 0; i < m.N; ++i)
             {
                 for(int j = 0; j < m.M; ++j)
                 {
-                    newM[i, j] *= v;
+                    result[i, j] *= v;
                 }
             }
-            return newM;
+            return result;
         }
         public static Matrix operator *(double v, Matrix m) => m * v;
         public static Matrix operator +(Matrix m1, Matrix m2)
@@ -130,6 +152,19 @@ namespace Core
             }
             return result;
         }
+        public static Matrix operator +(Matrix m, double v)
+        {
+            Matrix result = new Matrix(m);
+            for (int i = 0; i < m.N; ++i)
+            {
+                for (int j = 0; j < m.M; ++j)
+                {
+                    result[i, j] += v;
+                }
+            }
+            return result;
+        }
+        public static Matrix operator +(double v, Matrix m) => m + v;
         public static Matrix operator -(Matrix m1, Matrix m2)
         {
             if (m1.N != m2.N || m1.M != m2.M) throw new ArgumentException("Dimension not equal.");

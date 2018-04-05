@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HW3
+namespace Core.Distributions
 {
-    public interface IDataGenerator<X>
+    public interface IDistribution<X>
     {
         X Generate();
         IEnumerable<X> Generate(int n);

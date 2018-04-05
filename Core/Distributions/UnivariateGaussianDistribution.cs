@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HW3
+namespace Core.Distributions
 {
-    public class UnivariateGaussianDataGenerator : IDataGenerator<double>
+    public class UnivariateGaussianDistribution : IDistribution<double>
     {
-        public double Mu { get; private set; }
+        public double Mean { get; private set; }
         public double Sigma { get; private set; }
 
         private const double TwoPi = Math.PI * 2; 
@@ -14,26 +14,26 @@ namespace HW3
         private static bool _generated;
         private static double _value;
 
-        static UnivariateGaussianDataGenerator()
+        static UnivariateGaussianDistribution()
         {
             _rnd = new Random();
         }
 
-        public UnivariateGaussianDataGenerator(double mu, double sigma)
+        public UnivariateGaussianDistribution(double mean, double sigma)
         {
-            Mu = mu;
+            Mean = mean;
             Sigma = sigma;
             _generated = false;
         }
 
         public double Generate()
         {
-            return Generate(Mu, Sigma);
+            return Generate(Mean, Sigma);
         }
 
         public IEnumerable<double> Generate(int n)
         {
-            return Generate(n, Mu, Sigma);
+            return Generate(n, Mean, Sigma);
         }
 
         /// <summary>
