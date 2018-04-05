@@ -2,6 +2,7 @@ using System;
 using Xunit;
 using HW1;
 using System.Collections.Generic;
+using Core;
 
 namespace UnitTest
 {

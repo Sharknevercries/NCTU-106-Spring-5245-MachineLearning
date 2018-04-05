@@ -15,6 +15,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="test1">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

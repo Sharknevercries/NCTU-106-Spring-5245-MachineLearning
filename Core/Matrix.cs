@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace HW1
+namespace Core
 {
     public class Matrix : IEquatable<Matrix>
     {
