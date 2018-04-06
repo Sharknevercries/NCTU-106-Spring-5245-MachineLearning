@@ -382,6 +382,21 @@ namespace Core
             }
         }
 
+        public double L1Norm()
+        {
+            double maxOne = double.MinValue;
+            for (int i = 0; i < M; ++i)
+            {
+                double sum = 0.0;
+                for (int j = 0; j < N; ++j)
+                {
+                    sum += Math.Abs(Value[j, i]);
+                }
+                maxOne = Math.Max(maxOne, sum);
+            }
+            return maxOne;
+        }
+
         public override bool Equals(object obj)
         {
             return Equals(obj as Matrix);

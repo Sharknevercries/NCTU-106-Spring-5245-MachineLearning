@@ -7,7 +7,18 @@ namespace Core.Distributions
     public class UnivariateGaussianDistribution : IDistribution<double>
     {
         public double Mean { get; private set; }
-        public double Sigma { get; private set; }
+        public double Variance { get; private set; }
+        public double Sigma
+        {
+            get
+            {
+                return Math.Sqrt(Variance);
+            }
+            set
+            {
+                Variance = Math.Pow(value, 2);
+            }
+        }
 
         private const double TwoPi = Math.PI * 2; 
         private static Random _rnd;
@@ -19,32 +30,32 @@ namespace Core.Distributions
             _rnd = new Random();
         }
 
-        public UnivariateGaussianDistribution(double mean, double sigma)
+        public UnivariateGaussianDistribution(double mean, double variance)
         {
             Mean = mean;
-            Sigma = sigma;
+            Variance = variance;
             _generated = false;
         }
 
         public double Generate()
         {
-            return Generate(Mean, Sigma);
+            return Generate(Mean, Variance);
         }
 
         public IEnumerable<double> Generate(int n)
         {
-            return Generate(n, Mean, Sigma);
+            return Generate(n, Mean, Variance);
         }
 
         /// <summary>
         /// Implement Box-Muller Transform
         /// </summary>
-        public static double Generate(double mu, double sigma)
+        public static double Generate(double mu, double variance)
         {
             _generated = !_generated;
             if (!_generated)
             {
-                return _value * sigma + mu;
+                return _value * Math.Sqrt(variance) + mu;
             }
 
             double u1 = _rnd.NextDouble();
@@ -56,16 +67,16 @@ namespace Core.Distributions
 
             _value = z1;
 
-            return z0 * sigma + mu;
+            return z0 * Math.Sqrt(variance) + mu;
         }
 
-        public static IEnumerable<double> Generate(int n, double mu, double sigma)
+        public static IEnumerable<double> Generate(int n, double mu, double variance)
         {
             var list = new List<double>();
 
             for (int i = 0; i < n; ++i)
             {
-                list.Add(Generate(mu, sigma));
+                list.Add(Generate(mu, variance));
             }
 
             return list;

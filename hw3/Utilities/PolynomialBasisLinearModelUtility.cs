@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace HW3.Utility
+namespace HW3.Utilities
 {
     public static class PolynomialBasisLinearModelUtility
     {
