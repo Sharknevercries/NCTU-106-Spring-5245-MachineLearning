@@ -126,14 +126,13 @@ namespace HW3
                         var Y = new Matrix(y, false);
                         Console.WriteLine($"New data: ({ x }, { Y[0, 0] }) ");
 
+                        // posterior
                         var posteriorPrecision = (1.0 / a) * X.GetTranspose() * X + prior.Precision;
-
                         if (!Matrix.TryGetInverse(in posteriorPrecision, out var posteriorCovariance))
                         {
                             // Maybe try pseudo-inverse ?
                             throw new NotImplementedException();
                         }
-
                         var posteriorMean = posteriorCovariance * (prior.Precision * prior.Mean + (1.0 / a) * X.GetTranspose() * Y);
 
                         var meanL1NormDiff = posteriorMean.L1Norm() - prior.Mean.L1Norm();
@@ -148,6 +147,14 @@ namespace HW3
                         prior.PrintInfo();
                         Console.WriteLine("Covariance:");
                         priorCovariance.PrettyPrint();
+
+                        // predictive
+                        var predictiveMean = X * posteriorMean;
+                        var predictiveVariance = a + X * posteriorPrecision * X.GetTranspose();
+                        Console.WriteLine("Predictive Mean:");
+                        predictiveMean.PrettyPrint();
+                        Console.WriteLine("Predictive Variance:");
+                        predictiveVariance.PrettyPrint();
                     }
                 }
             }
