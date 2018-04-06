@@ -150,7 +150,7 @@ namespace HW3
 
                         // predictive
                         var predictiveMean = X * posteriorMean;
-                        var predictiveVariance = a + X * posteriorPrecision * X.GetTranspose();
+                        var predictiveVariance = a + X * posteriorCovariance * X.GetTranspose();
                         Console.WriteLine("Predictive Mean:");
                         predictiveMean.PrettyPrint();
                         Console.WriteLine("Predictive Variance:");
