@@ -109,7 +109,7 @@ namespace HW3
 
                     bool isConverge = false;
                     var prior = new Core.Distributions.MultivariateGaussianDistribution(Enumerable.Repeat(0.0, nBasis), b * Matrix.GetDiagnoalMatrix(nBasis));
-                    var polynomialBasisLinearModel = new PolynomialBasisLinearModelDistribution(nBasis, a, w);
+                    var polynomialBasisLinearModel = new PolynomialBasisLinearModelDistribution(nBasis, w, new Core.Distributions.UnivariateGaussianDistribution(0, a));
                     var uniformModel = new Core.Distributions.UniformDistribution(-10.0, 10.0);
                     prior.PrintInfo();
                     int iter = 1;
@@ -122,7 +122,7 @@ namespace HW3
 
                         var X = Utility.PolynomialBasisLinearModelUtility.GetDesignMatrix(nBasis, 2);
                         var Y = new Matrix(y, false);
-                        var posteriorPrecision = a * X.GetTranspose() * X + prior.Precision;
+                        var posteriorPrecision = Math.Pow(a, 2) * X.GetTranspose() * X + prior.Precision;
 
                         if (!Matrix.TryGetInverse(in posteriorPrecision, out var posteriorCovariance))
                         {
@@ -130,9 +130,9 @@ namespace HW3
                             throw new NotImplementedException();
                         }
 
-                        var posteriorMean = posteriorCovariance * (prior.Precision * prior.Mean + a * X.GetTranspose() * Y);
+                        var posteriorMean = posteriorCovariance * (prior.Precision * prior.Mean + Math.Pow(a, 2) * X.GetTranspose() * Y);
 
-                        Console.WriteLine($"New data: ({ x }, { y.ToArray()[0] }) ");
+                        Console.WriteLine($"New data: ({ x }, { Y[0, 0] }) ");
 
                         prior = new Core.Distributions.MultivariateGaussianDistribution(posteriorMean, posteriorPrecision);
                         prior.PrintInfo();
@@ -146,11 +146,11 @@ namespace HW3
             Console.WriteLine("Usage: hw3 [arguments]");
             Console.WriteLine("arguments:");
             Console.WriteLine("\t--part=PART              \tSequential estimate(se) or Baysian linear regression(blr)");
-            Console.WriteLine("\t--mu=MU                  \tUnivariate gaussian dist. mean");
-            Console.WriteLine("\t--sig=SIG                \tUnivariate gaussian dist. sigma");
+            Console.WriteLine("\t--mu=MU                  \tUnivariate gaussian dist. mean N(mean, x)");
+            Console.WriteLine("\t--sig=SIG                \tUnivariate gaussian dist. sigma N(x, sigma)");
             Console.WriteLine("\t--n=N                    \tPolynomial basis number");
-            Console.WriteLine("\t--a=A                    \tPolynomial basis linear model noise ~ N(0, a) precision");
-            Console.WriteLine("\t--w=[w0,w1,...,wn]    \tPolynomial basis linear model w");
+            Console.WriteLine("\t--a=A                    \tPolynomial basis linear model noise ~ N(0,a)");
+            Console.WriteLine("\t--w=[w0,w1,...,wn]       \tPolynomial basis linear model w");
             Console.WriteLine("\t--b=B                    \tBaysian linear regression prior N(0, b^-1I)");
         }
     }
