@@ -179,6 +179,42 @@ namespace Core
             }
             return result;
         }
+        public static Matrix operator -(Matrix m)
+        {
+            Matrix result = new Matrix(m);
+            for (int i = 0; i < m.N; ++i)
+            {
+                for (int j = 0; j < m.M; ++j)
+                {
+                    result[i, j] = -result[i, j];
+                }
+            }
+            return result;
+        }
+        public static Matrix operator /(Matrix m, double v)
+        {
+            Matrix result = new Matrix(m);
+            for (int i = 0; i < m.N; ++i)
+            {
+                for (int j = 0; j < m.M; ++j)
+                {
+                    result[i, j] /= v;
+                }
+            }
+            return result;
+        }
+        public static Matrix operator /(double v, Matrix m)
+        {
+            Matrix result = new Matrix(m);
+            for (int i = 0; i < m.N; ++i)
+            {
+                for (int j = 0; j < m.M; ++j)
+                {
+                    result[i, j] = v / result[i, j];
+                }
+            }
+            return result;
+        }
         public double this[int n, int m]
         {
             get => Value[n, m];
@@ -196,6 +232,43 @@ namespace Core
             Matrix m = new Matrix(this);
             m.Transpose();
             return m;
+        }
+
+        public Matrix GetRow(int row)
+        {
+            Matrix m = new Matrix(1, M);
+            for (int i = 0; i < M; ++i)
+                m[0, i] = Value[row, i];
+            return m;
+        }
+
+        public Matrix GetCol(int col)
+        {
+            Matrix m = new Matrix(N, 1);
+            for (int i = 0; i < N; ++i)
+                m[i, 0] = Value[i, col];
+            return m;
+        }
+
+        public double[] GetArray(bool isRowMajor)
+        {
+            double[] result = new double[N * M];
+            if (isRowMajor)
+            {
+                Buffer.BlockCopy(Value, 0, result, 0, sizeof(double) * N * M);
+            }
+            else
+            {
+                int ptr = 0;
+                for (int i = 0; i < M; ++i)
+                {
+                    for(int j = 0; j < N; ++j)
+                    {
+                        result[ptr++] = Value[i, j];
+                    }
+                }
+            }
+            return result;
         }
 
         public void Transpose()

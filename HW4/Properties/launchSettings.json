@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "hw4": {
+      "commandName": "Project"
+    },
+    "Logistic Regression": {
+      "commandName": "Project",
+      "commandLineArgs": "--part=lr --n=1000 --mx1=0 --my1=0 --vx1=5 --vy1=5 --mx2=5 --my2=5 --vx2=2 --vy2=5"
+    }
+  }
+}
