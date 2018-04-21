@@ -64,19 +64,34 @@ namespace HW4
             {
                 // TODO: Newton Hessian to enhance convergence
                 var gradient = A.GetTranspose() * (1.0 / (1.0 + Exp(-(A * Weight))) - Y);
+                var D = new Matrix(A.N, A.N);
+                var z = A * Weight;
+                for (int i = 0; i < A.N; ++i)
+                {
+                    var zi = z[i, 0];
+                    D[i, i] = Sigmoid(zi) * (1 - Sigmoid(zi));
+                }
+                var heissianMatrix = A.GetTranspose() * D * A;
                 
+                // Some data may let the w to be very huge. (Why?)
+                if (Matrix.TryGetInverse(in heissianMatrix, out var inverseHessianMatrix))
+                {
+                    Weight -= inverseHessianMatrix * gradient;
+                }
+                else
+                {
+                    Weight -= 0.01 * gradient;
+                }
+
+                // TODO: How to ensure convergence?
                 if (gradient.L1Norm() < -1e9)
                 {
                     // Converge
                     break;
                 }
 
-                // TODO: How to ensure convergence?
-                Weight -= 0.01 * gradient;
-
-                var temp = A * Weight;
                 cm = new ConfusionMatrix(
-                    (A * Weight).GetColArray(0).Select(v => v >= 0 ? 1 : 0),
+                    z.GetColArray(0).Select(v => v >= 0 ? 1 : 0),
                     Y.GetColArray(0).Select(v => (int)v));
 
                 if (IsShowingTrainingProcess)
@@ -101,6 +116,12 @@ namespace HW4
             }
             return A;
         }
+
+        private static double Sigmoid(double v)
+        {
+            return 1.0 / (1.0 + Math.Exp(v));
+        }
+
         private static Matrix Exp(Matrix m)
         {
             Matrix ret = new Matrix(m);
