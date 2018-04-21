@@ -242,11 +242,27 @@ namespace Core
             return m;
         }
 
+        public double[] GetRowArray(int row)
+        {
+            double[] m = new double[M];
+            for (int i = 0; i < M; ++i)
+                m[i] = Value[row, i];
+            return m;
+        }
+
         public Matrix GetCol(int col)
         {
             Matrix m = new Matrix(N, 1);
             for (int i = 0; i < N; ++i)
                 m[i, 0] = Value[i, col];
+            return m;
+        }
+
+        public double[] GetColArray(int col)
+        {
+            double[] m = new double[N];
+            for (int i = 0; i < N; ++i)
+                m[i] = Value[i, col];
             return m;
         }
 

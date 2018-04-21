@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Core;
 using Core.Distributions;
+using Core.Interfaces;
 
-namespace hw4
+namespace HW4
 {
     public class HW4
     {
@@ -77,35 +78,11 @@ namespace hw4
                     var dx2 = GeneratePoints(n, mx2, vx2, my2, vy2);
                     var dy2 = Enumerable.Repeat<double>(1, n);
 
-                    var A = GetDesignMatrix(dx1.Concat(dx2));
-                    var Y = new Matrix(dy1.Concat(dy2).ToList());
+                    var trainer = new LogisticRegressionTrainer();
+                    trainer.IsShowingTrainingProcess = true;
+                    trainer.Train(dx1.Concat(dx2).Zip(dy1.Concat(dy2), (a, b) => (a, b)));
 
-                    int iter = 1;
-                    while (true)
-                    {
-                        // TODO: Newton Hessian to enhance convergence
-                        var a1 = -(A * w);
-                        var a2 = Exp(a1);
-                        var a3 = (1.0 / (1.0 + a2)) - Y;
-                        var gradient = A.GetTranspose() * a3;
-
-                        //var gradient = A.GetTranspose() * (1.0 / (1.0 + Exp(-(A * w))) - Y);
-
-                        if (gradient.L1Norm() < -1e9)
-                        {
-                            // Converge
-                            break;
-                        }
-
-                        // TODO: How to ensure convergence?
-                        w -= 0.01 * gradient;
-                        Console.WriteLine($"Iter: { iter } ========");
-                        Console.WriteLine($"w = [{ w[0, 0] }, { w[1, 0] }, { w[2, 0] }]");
-
-                        var judge = A * w;
-                        PrintConfusionMatrix(judge, Y);
-                        ++iter;
-                    }
+                    trainer.PrintModel();
                 }
                 else if (part == "em")
                 {
@@ -113,30 +90,7 @@ namespace hw4
             }
         }
 
-        private static void PrintConfusionMatrix(Matrix judge, Matrix groundTruth)
-        {
-            int n = groundTruth.N;
-            int tn = 0, tp = 0, fp = 0, fn = 0;
-
-            for (int i = 0; i < n; ++i)
-            {
-                int u = judge[i, 0] >= 0 ? 1 : 0;
-                int v = (int) groundTruth[i, 0];
-                if (u == 1 && v == 1)
-                    ++tp;
-                else if (u == 1 && v == 0)
-                    ++fp;
-                else if (u == 0 && v == 1)
-                    ++fn;
-                else if (u == 0 && v == 0)
-                    ++tn;
-            }
-
-            Console.WriteLine("\t\tActual");
-            Console.WriteLine("\t\t1\t0");
-            Console.WriteLine($"Judge\t1\t{ tp }\t{ fp }");
-            Console.WriteLine($"\t0\t{ fn }\t{ tn }");
-        }
+        
 
         private static IEnumerable<(double, double)> GeneratePoints(int n, double mx, double vx, double my, double vy)
         {
@@ -146,34 +100,6 @@ namespace hw4
                 list.Add((UnivariateGaussianDistribution.Generate(mx, vx), UnivariateGaussianDistribution.Generate(my, vy)));
             }
             return list;
-        }
-
-        private static Matrix Exp(Matrix m)
-        {
-            Matrix ret = new Matrix(m);
-            for (int i = 0; i < ret.N; ++i)
-            {
-                for(int j = 0; j < ret.M; ++j)
-                {
-                    ret[i, j] = Math.Exp(ret[i, j]);
-                }
-            }
-            return ret;
-        }
-
-        private static Matrix GetDesignMatrix(IEnumerable<(double, double)> points)
-        {
-            var x = points.ToList();
-            Matrix A = new Matrix(x.Count, 5);
-            for (int i = 0; i < A.N; ++i)
-            {
-                A[i, 0] = 1;
-                A[i, 1] = x[i].Item1;
-                A[i, 2] = x[i].Item2;
-                A[i, 3] = Math.Pow(x[i].Item1, 2);
-                A[i, 4] = Math.Pow(x[i].Item2, 2);
-            }
-            return A;
         }
 
         private static void PrintHelp()

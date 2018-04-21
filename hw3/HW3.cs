@@ -122,7 +122,7 @@ namespace HW3
                         var x = uniformModel.Generate();
                         var y = polynomialBasisLinearModel.Generate(1, new List<double>() { x });
 
-                        var X = Utilities.PolynomialBasisLinearModelUtility.GetDesignMatrix(nBasis, x);
+                        var X = Core.Utils.PolynomialBasisLinearModelUtility.GetDesignMatrix(nBasis, x);
                         var Y = new Matrix(y, false);
                         Console.WriteLine($"New data: ({ x }, { Y[0, 0] }) ");
 

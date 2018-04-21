@@ -29,7 +29,7 @@ namespace HW3.Generator
             if (w.Count() != nBasis) throw new ArgumentException();
 
             // 1 * nBasis
-            var phiX = Utilities.PolynomialBasisLinearModelUtility.GetDesignMatrix(nBasis, x);
+            var phiX = Core.Utils.PolynomialBasisLinearModelUtility.GetDesignMatrix(nBasis, x);
             // nBasis * 1
             var wm = new Matrix(w, false);
 
