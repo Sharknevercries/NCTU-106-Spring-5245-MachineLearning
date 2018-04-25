@@ -86,11 +86,49 @@ namespace HW4
                 }
                 else if (part == "em")
                 {
+                    string trainDataPath = default;
+                    string trainLabelPath = default;
+                    string testDataPath = default;
+                    string testLabelPath = default;
+                    string output = "result";
+
+                    foreach (var arg in args)
+                    {
+                        if (arg.StartsWith("--train="))
+                        {
+                            trainDataPath = arg.Substring(8);
+                        }
+                        else if (arg.StartsWith("--train_label="))
+                        {
+                            trainLabelPath = arg.Substring(14);
+                        }
+                        else if (arg.StartsWith("--test="))
+                        {
+                            testDataPath = arg.Substring(7);
+                        }
+                        else if (arg.StartsWith("--test_label="))
+                        {
+                            testLabelPath = arg.Substring(13);
+                        }
+                        else if (arg.StartsWith("--output="))
+                        {
+                            output = arg.Substring(9);
+                        }
+                    }
+
+                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath);
+                    var test = Core.Datasets.MNIST.GetDataset(testDataPath, testLabelPath);
+                    var all = train.Concat(test);
+
+                    foreach(var item in all)
+                    {
+                        item.BinSize = 128;
+                    }
+
+
                 }
             }
         }
-
-        
 
         private static IEnumerable<(double, double)> GeneratePoints(int n, double mx, double vx, double my, double vy)
         {

@@ -6,16 +6,22 @@ namespace Core.DataType
 {
     public class Image
     {
-        public Image(int n, int m)
+        public Image(int n, int m) : this(n, m, 8)
+        {
+        }
+
+        public Image(int n, int m, int binSize)
         {
             N = n;
             M = m;
+            BinSize = binSize;
             Pixel = new byte[N * M];
             PixelBin = new int[N * M];
         }
 
         public int N { get; private set; }
         public int M { get; private set; }
+        public int BinSize { get; set; }
         public int Label { get; set; }
 
         public byte[] Pixel { get; set; }
@@ -27,7 +33,7 @@ namespace Core.DataType
             set
             {
                 Pixel[n * M + m] = value;
-                PixelBin[n * M + m] = value / 8;
+                PixelBin[n * M + m] = value / BinSize;
             }
         }
 
