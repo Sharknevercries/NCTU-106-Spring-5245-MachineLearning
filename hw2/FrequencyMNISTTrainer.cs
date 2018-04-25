@@ -1,4 +1,5 @@
-﻿using HW2;
+﻿using Core.DataType;
+using HW2;
 using System;
 using System.Collections.Generic;
 using System.Linq;

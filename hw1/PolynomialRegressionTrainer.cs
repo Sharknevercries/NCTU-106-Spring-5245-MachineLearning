@@ -35,13 +35,14 @@ namespace HW1
         /// Try to find a polynomial function with order n to fit the data using rLSE
         /// </summary>
         /// <param name="data"></param>
-        public void Train(List<(double, double)> data)
+        public void Train(IEnumerable<(double, double)> data)
         {
             var A = GetDesignMatrix(PolynomialBasesNumber, data.Select(d => d.Item1).ToList());
             var b = new Matrix(A.N, 1);
+            var listData = data.ToList();
             for(int i = 0; i < A.N; ++i)
             {
-                b[i, 0] = data[i].Item2;
+                b[i, 0] = listData[i].Item2;
             }
             _weight = new Matrix(A.N, 1);
 
@@ -87,7 +88,7 @@ namespace HW1
             return Math.Pow(Predict(data.Item1) - data.Item2, 2);
         }
 
-        public double Error(List<(double, double)> data)
+        public double Error(IEnumerable<(double, double)> data)
         {
             return data.Select(d => Error(d)).Sum();
         }

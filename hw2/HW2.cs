@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Core.DataType;
 
 namespace HW2
 {
@@ -67,8 +68,9 @@ namespace HW2
                     TextWriter stdout = Console.Out;
                     Console.SetOut(sw);
 
-                    var train = GetMNISTDataset(trainDataPath, trainLabelPath);
-                    var test = GetMNISTDataset(testDataPath, testLabelPath);
+                    
+                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath);
+                    var test = Core.Datasets.MNIST.GetDataset(testDataPath, testLabelPath);
                     MNISTTrainner trainer = default;
 
                     if (mode == 0)
@@ -188,47 +190,6 @@ namespace HW2
             Console.WriteLine("\t--train_label=FILENAME   \tMNIST trainning data label");
             Console.WriteLine("\t--test=FILENAME          \tMNIST test data");
             Console.WriteLine("\t--test_label=FILENAME    \tMNIST test data label");
-        }
-
-        public static IEnumerable<Image> GetMNISTDataset(string pixelPath, string labelPath)
-        {
-            var list = new List<Image>();
-
-            byte[] pixels = File.ReadAllBytes(pixelPath);
-            byte[] labels = File.ReadAllBytes(labelPath);
-
-            if (BitConverter.IsLittleEndian)
-            {
-                for (int i = 0; i <16; i += 4)
-                {
-                    Array.Reverse(pixels, i, 4);
-                }
-                for(int i = 0; i < 8; i += 4)
-                {
-                    Array.Reverse(labels, i, 4);
-                }
-            }
-
-            int n = BitConverter.ToInt32(pixels, 4);
-            int nrow = BitConverter.ToInt32(pixels, 8);
-            int ncol = BitConverter.ToInt32(pixels, 12);
-
-            for(int i = 0, pixelPtr = 16, labelPtr = 8; i < n; ++i)
-            {
-                var image = new Image(nrow, ncol);
-                for (int row = 0; row < nrow; ++row)
-                {
-                    for (int col = 0; col < ncol; ++col)
-                    {
-                        image[row, col] = pixels[pixelPtr++];
-                    }
-                }
-                image.Label = labels[labelPtr++];
-
-                list.Add(image);
-            }
-
-            return list;
         }
 
         public static IEnumerable<string> GetTossDataset(string path)

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
-namespace HW2
+namespace Core.DataType
 {
     public class Image
     {
@@ -38,7 +37,7 @@ namespace HW2
 
             for (int i = 0; i < a.N * a.M; ++i)
             {
-                if(a.PixelBin[i] != b.PixelBin[i])
+                if (a.PixelBin[i] != b.PixelBin[i])
                 {
                     return false;
                 }

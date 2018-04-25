@@ -14,6 +14,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="t10k-images.idx3-ubyte">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
