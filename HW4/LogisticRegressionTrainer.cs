@@ -92,7 +92,7 @@ namespace HW4
 
                 cm = new ConfusionMatrix(
                     z.GetColArray(0).Select(v => v >= 0 ? 1 : 0),
-                    Y.GetColArray(0).Select(v => (int)v));
+                    Y.GetColArray(0).Select(v => (int)v), 2);
 
                 if (IsShowingTrainingProcess)
                 {

@@ -7,20 +7,22 @@ namespace Core.Utils
 {
     public class ConfusionMatrix
     {
-        public int TruePositive { get; private set; }
-        public int FalsePositive { get; private set; }
-        public int TrueNegative { get; private set; }
-        public int FalseNegative { get; private set; }
+        public int[] TruePositive { get; private set; }
+        public int[] FalsePositive { get; private set; }
+        public int[] TrueNegative { get; private set; }
+        public int[] FalseNegative { get; private set; }
+        public int Category;
 
-        public ConfusionMatrix()
+        public ConfusionMatrix(int categroy)
         {
-            TruePositive = 0;
-            TrueNegative = 0;
-            FalseNegative = 0;
-            FalsePositive = 0;
+            TruePositive = new int[categroy];
+            TrueNegative = new int[categroy];
+            FalseNegative = new int[categroy];
+            FalsePositive = new int[categroy];
+            Category = categroy;
         }
 
-        public ConfusionMatrix(IEnumerable<int> actual, IEnumerable<int> expected) : this()
+        public ConfusionMatrix(IEnumerable<int> actual, IEnumerable<int> expected, int category) : this(category)
         {
             Compute(actual.ToArray(), expected.ToArray());
         }
@@ -28,27 +30,42 @@ namespace Core.Utils
         private void Compute(int[] actual, int[] expected)
         {
             if (actual.Length != expected.Length) throw new ArgumentException();
-            for (int i = 0; i < expected.Length; ++i)
+
+            for (int c = 0; c < Category; ++c)
             {
-                int u = actual[i];
-                int v = expected[i];
-                if (u == 1 && v == 1)
-                    ++TruePositive;
-                else if (u == 1 && v == 0)
-                    ++FalsePositive;
-                else if (u == 0 && v == 1)
-                    ++FalseNegative;
-                else if (u == 0 && v == 0)
-                    ++TrueNegative;
+                for (int i = 0; i < expected.Length; ++i)
+                {
+                    int u = actual[i];
+                    int v = expected[i];
+                    if (u == c && v == c)
+                        ++TruePositive[c];
+                    else if (u == c && v != c)
+                        ++FalsePositive[c];
+                    else if (u != c && v == c)
+                        ++FalseNegative[c];
+                    else if (u != c && v != c)
+                        ++TrueNegative[c];
+                }
             }
         }
 
         public void Print()
         {
-            Console.WriteLine("\t\tExpected");
+            for(int i = 0; i < Category; ++i)
+            {
+                Print(i);
+            }
+           
+        }
+
+        public void Print(int category)
+        {
+            Console.WriteLine($"{ category }\t\tExpected");
             Console.WriteLine("\t\t1\t0");
-            Console.WriteLine($"Actual\t1\t{ TruePositive }\t{ FalsePositive }");
+            Console.WriteLine($"Actual\t1\t{ TruePositive[category] }\t{ FalsePositive[category] }");
             Console.WriteLine($"\t0\t{ FalseNegative }\t{ TrueNegative }");
+            Console.WriteLine($"Sensitivity: {(double)TruePositive[category] / (TruePositive[category] + FalseNegative[category]) }");
+            Console.WriteLine($"Specificity: {(double)TrueNegative[category] / (TrueNegative[category] + FalsePositive[category]) }");
         }
     }
 }

@@ -4,14 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace hw4
+namespace HW4
 {
     public class MNISTEMAlgorithm
     {
         public const int Category = 10;
         public const int Dimension = 28 * 28;
 
-        IEnumerable<int> Cluster(IEnumerable<Image> data)
+        public IEnumerable<int> Cluster(IEnumerable<Image> data)
         {
             var X = data.ToList();
 
@@ -36,6 +36,7 @@ namespace hw4
                 pi[i] /= sum;
             }
 
+            double prevLikelihood = 0;
             // EM iterations
             while (true)
             {
@@ -61,23 +62,62 @@ namespace hw4
                 // Maximization
                 for (int i = 0; i < Category; ++i)
                 {
-                    pi[i] =  Array2DExtensions.ColumnSum(z, i) / X.Count;
-                }
-                for (int i = 0; i < Dimension; ++i)
-                {
-                    double denominator = Array2DExtensions.RowSum(z, i);
-                    for (int j = 0; j < Category; ++j)
+                    double effectiveNumber = Array2DExtensions.ColumnSum(z, i);
+
+                    pi[i] =  effectiveNumber / X.Count;
+
+                    for(int j = 0; j < Dimension; ++j)
                     {
                         double numerator = 0;
-                        for (int k = 0; k < X.Count; ++k)
+                        for(int k = 0; k < X.Count; ++k)
                         {
-                            numerator += z[k, j] * X[k].PixelBin[i];
+                            numerator += z[k, i] * X[k].PixelBin[j];
                         }
-                        bern[j, i] = new Core.Distributions.BernoulliDistribution(numerator / denominator);
+                        bern[i, j] = new Core.Distributions.BernoulliDistribution(numerator / effectiveNumber);
                     }
                 }
+
+                double likelihood = 0;
+                for (int i = 0; i < X.Count; ++i)
+                {
+                    for(int j = 0; j < Category; ++j)
+                    {
+                        double v = Math.Log(pi[j]);
+                        for(int k = 0; k < Dimension; ++k)
+                        {
+                            v += X[i].PixelBin[k] * Math.Log(bern[j, k].Mu) + (1.0 - X[i].PixelBin[k]) * (1 - Math.Log(bern[j, k].Mu));
+                        }
+                        v *= z[i, j];
+                        likelihood += v;
+                    }
+                }
+
+                // Likelihood converge!
+                if (likelihood - prevLikelihood < 1e-9)
+                {
+                    break;
+                }
+
+                prevLikelihood = likelihood;
             }
-            return null;
+
+            var list = new List<int>();
+            for (int i = 0; i < X.Count; ++i)
+            {
+                int maxCategory = -1;
+                double maxValue = -1e9;
+                for (int j = 0; j < Category; ++j)
+                {
+                    if (maxValue < z[i, j])
+                    {
+                        maxValue = z[i, j];
+                        maxCategory = j;
+                    }
+                }
+                list.Add(maxCategory);
+            }
+
+            return list;
         }
     }
 

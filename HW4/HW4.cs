@@ -125,7 +125,11 @@ namespace HW4
                         item.BinSize = 128;
                     }
 
+                    var trainer = new MNISTEMAlgorithm();
+                    var ret = trainer.Cluster(all);
 
+                    var cm = new Core.Utils.ConfusionMatrix(ret, all.Select(v => v.Label), 10);
+                    cm.Print();
                 }
             }
         }
