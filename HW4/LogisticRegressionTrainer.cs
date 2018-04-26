@@ -58,11 +58,11 @@ namespace HW4
             var Y = new Matrix(data.Select(d => d.Item2));
             Weight = new Matrix(A.M, 1);
 
-            ConfusionMatrix cm = new ConfusionMatrix();
+            ConfusionMatrix cm = new ConfusionMatrix(0);
             Iteration = 0;
+            double prevLikelihood = double.MinValue;
             while (true)
             {
-                // TODO: Newton Hessian to enhance convergence
                 var gradient = A.GetTranspose() * (1.0 / (1.0 + Exp(-(A * Weight))) - Y);
                 var D = new Matrix(A.N, A.N);
                 var z = A * Weight;
@@ -83,12 +83,20 @@ namespace HW4
                     Weight -= 0.01 * gradient;
                 }
 
-                // TODO: How to ensure convergence?
-                if (gradient.L1Norm() < -1e9)
+                double likelihood = 0;
+                for(int i = 0; i < A.N; ++i)
+                {
+                    double v = Sigmoid((A.GetRow(i) * Weight)[0, 0]);
+                    likelihood += -(Y[i, 0] * Math.Log(v) + (1 - Y[i, 0]) * Math.Log(1 - v));
+                }
+                Console.WriteLine($"Likelihood: { likelihood }");
+
+                if (likelihood - prevLikelihood < 1e-9)
                 {
                     // Converge
                     break;
                 }
+                prevLikelihood = likelihood;
 
                 cm = new ConfusionMatrix(
                     z.GetColArray(0).Select(v => v >= 0 ? 1 : 0),

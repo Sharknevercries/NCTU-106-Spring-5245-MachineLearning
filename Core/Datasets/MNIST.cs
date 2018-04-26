@@ -8,7 +8,7 @@ namespace Core.Datasets
 {
     public class MNIST
     {
-        public static IEnumerable<Image> GetDataset(string pixelPath, string labelPath)
+        public static IEnumerable<Image> GetDataset(string pixelPath, string labelPath, int pixelBinSize = 8)
         {
             var list = new List<Image>();
 
@@ -33,7 +33,7 @@ namespace Core.Datasets
 
             for (int i = 0, pixelPtr = 16, labelPtr = 8; i < n; ++i)
             {
-                var image = new Image(nrow, ncol);
+                var image = new Image(nrow, ncol, pixelBinSize);
                 for (int row = 0; row < nrow; ++row)
                 {
                     for (int col = 0; col < ncol; ++col)
