@@ -11,6 +11,9 @@ namespace HW4
         public const int Category = 10;
         public const int Dimension = 28 * 28;
 
+        public const double Alpha1 = 1e-8;
+        public const double Alpha2 = 1e-8;
+
         public IEnumerable<int> Cluster(IEnumerable<Image> data)
         {
             var X = data.ToList();
@@ -25,9 +28,15 @@ namespace HW4
             for (int i = 0; i < Category; ++i)
             {
                 pi[i] = 1.0 / Category;
+                double sum = 0;
                 for(int j = 0; j < Dimension; ++j)
                 {
                     bern[i, j] = new Core.Distributions.BernoulliDistribution(rnd.NextDouble());
+                    sum += bern[i, j].Mu * bern[i, j].Mu;
+                }
+                for (int j = 0; j < Dimension; ++j)
+                {
+                    bern[i, j].Mu /= Math.Sqrt(sum);
                 }
             }
             double prevLikelihood = double.MinValue;
@@ -45,11 +54,12 @@ namespace HW4
                         z[i, j] = pi[j];
                         for (int k = 0; k < Dimension; ++k)
                         {
-                            z[i, j] *= 1.23;
+                            z[i, j] *= 1.22;
                             z[i, j] *= Math.Pow(bern[j, k].Mu, X[i].PixelBin[k]) * Math.Pow(1.0 - bern[j, k].Mu, 1 - X[i].PixelBin[k]);
                         }
                     }
                     double sum = Array2DExtensions.RowSum(z, i);
+                    if (i == 0) Console.WriteLine(sum);
                     for (int j = 0; j < Category; ++j)
                     {
                         z[i, j] /= sum;
@@ -59,9 +69,10 @@ namespace HW4
                 // Maximization
                 for (int i = 0; i < Category; ++i)
                 {
+                    // Dirichlet prior smoothing
                     double effectiveNumber = Array2DExtensions.ColumnSum(z, i);
 
-                    pi[i] =  effectiveNumber / X.Count;
+                    pi[i] =  (effectiveNumber + Alpha2) / (X.Count + Category * Alpha2);
 
                     for(int j = 0; j < Dimension; ++j)
                     {
@@ -70,7 +81,7 @@ namespace HW4
                         {
                             numerator += z[k, i] * X[k].PixelBin[j];
                         }
-                        bern[i, j] = new Core.Distributions.BernoulliDistribution(numerator / effectiveNumber);
+                        bern[i, j] = new Core.Distributions.BernoulliDistribution((numerator + Alpha1) / (effectiveNumber + Dimension * Alpha1));
                     }
                 }
 
@@ -80,18 +91,9 @@ namespace HW4
                     for(int j = 0; j < Category; ++j)
                     {
                         double v = Math.Log(pi[j]);
-                        for(int k = 0; k < Dimension; ++k)
+                        for (int k = 0; k < Dimension; ++k)
                         {
-                            if (X[i].PixelBin[k] == 0)
-                            {
-                                if (bern[j, k].Mu == 1) continue;
-                                v += Math.Log(1 - bern[j, k].Mu);
-                            }
-                            else
-                            {
-                                if (bern[j, k].Mu == 0) continue;
-                                v += Math.Log(bern[j, k].Mu);
-                            }
+                            v += X[i].PixelBin[k] * Math.Log(bern[j, k].Mu) + (1 - X[i].PixelBin[k]) * Math.Log(1 - bern[j, k].Mu);
                         }
                         v *= z[i, j];
                         likelihood += v;
