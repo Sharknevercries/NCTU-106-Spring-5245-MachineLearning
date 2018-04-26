@@ -72,7 +72,7 @@ namespace HW4
                     D[i, i] = Sigmoid(zi) * (1 - Sigmoid(zi));
                 }
                 var heissianMatrix = A.GetTranspose() * D * A;
-                
+
                 // Some data may let the w to be very huge. (Why?)
                 if (Matrix.TryGetInverse(in heissianMatrix, out var inverseHessianMatrix))
                 {
@@ -87,7 +87,8 @@ namespace HW4
                 for(int i = 0; i < A.N; ++i)
                 {
                     double v = Sigmoid((A.GetRow(i) * Weight)[0, 0]);
-                    likelihood += -(Y[i, 0] * Math.Log(v) + (1 - Y[i, 0]) * Math.Log(1 - v));
+                    if (v != 0) likelihood += Y[i, 0] * Math.Log(v);
+                    if (v != 1) likelihood += (1 - Y[i, 0]) * Math.Log(1 - v);
                 }
                 Console.WriteLine($"Likelihood: { likelihood }");
 
@@ -127,7 +128,7 @@ namespace HW4
 
         private static double Sigmoid(double v)
         {
-            return 1.0 / (1.0 + Math.Exp(v));
+            return 1.0 / (1.0 + Math.Exp(-v));
         }
 
         private static Matrix Exp(Matrix m)

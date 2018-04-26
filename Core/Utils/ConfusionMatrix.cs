@@ -65,7 +65,7 @@ namespace Core.Utils
             Console.WriteLine($"Actual\t1\t{ TruePositive[category] }\t{ FalsePositive[category] }");
             Console.WriteLine($"\t0\t{ FalseNegative[category] }\t{ TrueNegative[category] }");
             Console.WriteLine($"Sensitivity: {(double)TruePositive[category] / (TruePositive[category] + FalseNegative[category]) }");
-            Console.WriteLine($"Specificity: {(double)TrueNegative[category] / (TrueNegative[category] + FalsePositive[category]) }");
+            Console.WriteLine($"Specificity: {(double)FalsePositive[category] / (TrueNegative[category] + FalsePositive[category]) }");
         }
     }
 }
