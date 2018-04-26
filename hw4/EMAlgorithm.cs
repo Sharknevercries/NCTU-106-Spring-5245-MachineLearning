@@ -24,22 +24,19 @@ namespace HW4
             // Initialize
             for (int i = 0; i < Category; ++i)
             {
-                pi[i] = rnd.Next();
+                pi[i] = 1.0 / Category;
                 for(int j = 0; j < Dimension; ++j)
                 {
                     bern[i, j] = new Core.Distributions.BernoulliDistribution(rnd.NextDouble());
                 }
             }
-            double sum = pi.Sum();
-            for (int i = 0; i < Category; ++i)
-            {
-                pi[i] /= sum;
-            }
-
-            double prevLikelihood = 0;
+            double prevLikelihood = double.MinValue;
+            int iteration = 1;
             // EM iterations
             while (true)
             {
+                Console.WriteLine($"Iter: { iteration++ }");
+
                 // Expectation
                 for (int i = 0; i < X.Count; ++i)
                 {
@@ -48,11 +45,11 @@ namespace HW4
                         z[i, j] = pi[j];
                         for (int k = 0; k < Dimension; ++k)
                         {
+                            z[i, j] *= 1.23;
                             z[i, j] *= Math.Pow(bern[j, k].Mu, X[i].PixelBin[k]) * Math.Pow(1.0 - bern[j, k].Mu, 1 - X[i].PixelBin[k]);
                         }
-                        sum += z[i, j];
                     }
-                    sum = Array2DExtensions.ColumnSum(z, i);
+                    double sum = Array2DExtensions.RowSum(z, i);
                     for (int j = 0; j < Category; ++j)
                     {
                         z[i, j] /= sum;
@@ -85,7 +82,16 @@ namespace HW4
                         double v = Math.Log(pi[j]);
                         for(int k = 0; k < Dimension; ++k)
                         {
-                            v += X[i].PixelBin[k] * Math.Log(bern[j, k].Mu) + (1.0 - X[i].PixelBin[k]) * (1 - Math.Log(bern[j, k].Mu));
+                            if (X[i].PixelBin[k] == 0)
+                            {
+                                if (bern[j, k].Mu == 1) continue;
+                                v += Math.Log(1 - bern[j, k].Mu);
+                            }
+                            else
+                            {
+                                if (bern[j, k].Mu == 0) continue;
+                                v += Math.Log(bern[j, k].Mu);
+                            }
                         }
                         v *= z[i, j];
                         likelihood += v;
@@ -99,6 +105,7 @@ namespace HW4
                 }
 
                 prevLikelihood = likelihood;
+                Console.WriteLine($"Likelihood: { likelihood }");
             }
 
             var list = new List<int>();

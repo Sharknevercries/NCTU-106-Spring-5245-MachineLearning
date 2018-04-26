@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using Core;
@@ -116,19 +117,18 @@ namespace HW4
                         }
                     }
 
-                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath);
-                    var test = Core.Datasets.MNIST.GetDataset(testDataPath, testLabelPath);
-                    var all = train.Concat(test);
+                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath, 128);
 
-                    foreach(var item in all)
-                    {
-                        item.BinSize = 128;
-                    }
+                    FileStream fs = new FileStream(output, FileMode.Create);
+                    StreamWriter sw = new StreamWriter(fs);
+                    TextWriter stdout = Console.Out;
 
                     var trainer = new MNISTEMAlgorithm();
-                    var ret = trainer.Cluster(all);
-
-                    var cm = new Core.Utils.ConfusionMatrix(ret, all.Select(v => v.Label), 10);
+                    var ret = trainer.Cluster(train);
+                    
+                    var cm = new Core.Utils.ConfusionMatrix(ret, train.Select(v => v.Label), 10);
+                    cm.Print();
+                    Console.SetOut(sw);
                     cm.Print();
                 }
             }
