@@ -117,7 +117,7 @@ namespace HW4
                         }
                     }
 
-                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath, 128);
+                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath, 128).Take(1000);
 
                     FileStream fs = new FileStream(output, FileMode.Create);
                     StreamWriter sw = new StreamWriter(fs);
@@ -125,8 +125,23 @@ namespace HW4
 
                     var trainer = new MNISTEMAlgorithm();
                     var ret = trainer.Cluster(train);
+                    var groundTruth = train.Select(v => v.Label).Take(1000);
+                    IEnumerable<int> bestRet = ret;
+                    int maxTP = 0;
+
+                    foreach(var item in FindAllPermutation(10))
+                    {
+                        var replacedRet = ret.Select(d => item[d]).ToList();
+                        var temp = new Core.Utils.ConfusionMatrix(replacedRet, groundTruth, 10);
+                        // What is the best judgement for assign label?
+                        if (temp.TruePositive.Sum() > maxTP)
+                        {
+                            maxTP = temp.TruePositive.Sum();
+                            bestRet = replacedRet;
+                        }
+                    }
                     
-                    var cm = new Core.Utils.ConfusionMatrix(ret, train.Select(v => v.Label), 10);
+                    var cm = new Core.Utils.ConfusionMatrix(bestRet, groundTruth, 10);
                     cm.Print();
                     Console.SetOut(sw);
                     cm.Print();
@@ -159,6 +174,42 @@ namespace HW4
             Console.WriteLine("\t--vx2=VX2                \tN(MX2, VX2)");
             Console.WriteLine("\t--my2=MY2                \tN(MY2, VY2)");
             Console.WriteLine("\t--vy2=VY2                \tN(MY2, VY2)");
+        }
+
+        private static void Swap<T>(ref T a , ref T b)
+        {
+            T temp = a;
+            a = b;
+            b = temp;
+        }
+
+        private static IEnumerable<int[]> FindAllPermutation(int n)
+        {
+            int[] a = new int[n];
+            for (int i = 0; i < n; ++i)
+                a[i] = i;
+
+            do
+            {
+                yield return a;
+            } while (NextPermutation(a));
+        }
+
+        private static bool NextPermutation(int[] a)
+        {
+            for (int i = a.Length - 1; i > 0; --i)
+            {
+                if (a[i - 1] < a[i])
+                {
+                    int j = a.Length - 1;
+                    while (a[i - 1] >= a[j]) j--;
+                    Swap(ref a[i - 1], ref a[j]);
+                    for (int p = i, q = a.Length - 1; p < q; ++p, --q)
+                        Swap(ref a[p], ref a[q]);
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }
