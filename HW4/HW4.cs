@@ -117,7 +117,7 @@ namespace HW4
                         }
                     }
 
-                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath, 128).Take(1000);
+                    var train = Core.Datasets.MNIST.GetDataset(trainDataPath, trainLabelPath, 128);
 
                     FileStream fs = new FileStream(output, FileMode.Create);
                     StreamWriter sw = new StreamWriter(fs);
@@ -125,7 +125,7 @@ namespace HW4
 
                     var trainer = new MNISTEMAlgorithm();
                     var ret = trainer.Cluster(train);
-                    var groundTruth = train.Select(v => v.Label).Take(1000);
+                    var groundTruth = train.Select(v => v.Label).ToList();
                     IEnumerable<int> bestRet = ret;
                     int maxTP = 0;
 
@@ -145,6 +145,7 @@ namespace HW4
                     cm.Print();
                     Console.SetOut(sw);
                     cm.Print();
+                    sw.Close();
                 }
             }
         }

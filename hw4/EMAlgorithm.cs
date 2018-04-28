@@ -55,7 +55,6 @@ namespace HW4
                         z[i, j] = Math.Log(pi[j]);
                         for (int k = 0; k < Dimension; ++k)
                         {
-                            //z[i, j] *= 1.22;
                             z[i, j] += X[i].PixelBin[k] * Math.Log(bern[j, k].Mu) + (1 - X[i].PixelBin[k]) * Math.Log(1.0 - bern[j, k].Mu);
                         }
                         maxZ = Math.Max(maxZ, z[i, j]);
